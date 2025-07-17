@@ -74,7 +74,7 @@ find . -type f -name "$input_pdb" | while read -r pdb_file; do
 
     #clean old result file
     rm $result_set  $result_force
-    
+    echo "step force" > "$result_force"
     # Loop over steps and perform DelPhi calculations
     while [ "$temp_step" -le "$end_step" ]; do
         
@@ -185,8 +185,8 @@ find . -type f -name "$input_pdb" | while read -r pdb_file; do
         
         cat "result_step${temp_step}.txt" >> "$result_set"
 
-        #only force date
-        printf "step${temp_step} %.10f\n" "$projection" >> "result_force${temp_step}.txt"
+        # only force data
+        printf "${temp_step} %.10f\n" "$projection" >> "result_force${temp_step}.txt"
         cat "result_force${temp_step}.txt" >> "$result_force"
         
         ### clean temporary files
