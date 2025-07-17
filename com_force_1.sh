@@ -24,7 +24,6 @@
 # 2. pdb2pqr.py: A Python-based script to convert PDB files to PQR format.
 # 3. delphicpp: The executable file for running DelPhi calculations.
 #
-# Author: Cheng Haojie
 #
 # Description:
 # This script processes PDB files containing antigen and antibody data, 
@@ -179,9 +178,12 @@ find . -type f -name "$input_pdb" | while read -r pdb_file; do
         echo "\n" >> "result_step${temp_step}.txt"
         
         cat "result_step${temp_step}.txt" >> "$result_set"
+        ### clean temporary files
 
+        rm frc2.out temp_${temp_step}_complex  temp_${temp_step}_f2   temp_${temp_step}_q
         # Move to the next step
         temp_step=$((temp_step + step_increment))
+        pwd
         cd ../
         
 
