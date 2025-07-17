@@ -71,6 +71,10 @@ find . -type f -name "$input_pdb" | while read -r pdb_file; do
     temp_step=$start_step
     
     cd $target_dir
+
+    #clean old result file
+    rm $result_set  $result_force
+    
     # Loop over steps and perform DelPhi calculations
     while [ "$temp_step" -le "$end_step" ]; do
         
@@ -168,19 +172,26 @@ find . -type f -name "$input_pdb" | while read -r pdb_file; do
         # Calculate force projection along G vector
         dot_product=$(echo "$Fx * $Gx + $Fy * $Gy + $Fz * $Gz" | bc -l)
         projection=$(echo "$dot_product / $G_norm" | bc -l)
-
+        
+        rm result_force${temp_step}.txt
+        
         # Write results to the output file
         echo "Step ${temp_step}" > "result_step${temp_step}.txt"
         echo "G: $Gx $Gy $Gz" >> "result_step${temp_step}.txt"
         echo "Total Force: $Fx $Fy $Fz" >> "result_step${temp_step}.txt"
         echo "Binding Energy: $BE" >> "result_step${temp_step}.txt"
         printf "dot (Force, G): %.10f\n" "$projection" >> "result_step${temp_step}.txt"
-        echo "\n" >> "result_step${temp_step}.txt"
+        echo " " >> "result_step${temp_step}.txt"
         
         cat "result_step${temp_step}.txt" >> "$result_set"
+
+        #only force date
+        printf "step${temp_step} %.10f\n" "$projection" >> "result_force${temp_step}.txt"
+        cat "result_force${temp_step}.txt" >> "$result_force"
+        
         ### clean temporary files
 
-        rm frc2.out temp_${temp_step}_complex  temp_${temp_step}_f2   temp_${temp_step}_q
+        rm frc2.out temp_${temp_step}_complex  temp_${temp_step}_f2   temp_${temp_step}_q  result_force${temp_step}.txt
         # Move to the next step
         temp_step=$((temp_step + step_increment))
         pwd
